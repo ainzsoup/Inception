@@ -1,0 +1,46 @@
+version: '3'
+services:
+  mariadb:
+    build: requirements/mariadb
+    environment:
+      - MYSQL_ROOT_PASSWORD=${MYSQL_ROOT_PASSWORD}
+      - MYSQL_DATABASE=${MYSQL_DATABASE}
+      - MYSQL_USER=${MYSQL_USER}
+      - MYSQL_PASSWORD=${MYSQL_PASSWORD}
+    volumes:
+      - mariadb_data:/var/lib/mysql:rw
+  nginx:
+    build: requirements/nginx
+    ports:
+      - "443:443"
+    volumes:
+      - wordpress_data:/var/www/html:rw
+    depends_on:
+      - wordpress
+  wordpress:
+    build: requirements/wordpress
+    depends_on:
+      - mariadb
+    volumes:
+      - wordpress_data:/var/www/html:rw
+    environment:
+      - WORDPRESS_DB_HOST=${WORDPRESS_DB_HOST}
+      - WORDPRESS_DB_NAME=${WORDPRESS_DB_NAME} 
+      - WORDPRESS_DB_USER=${WORDPRESS_DB_USER}
+      - WORDPRESS_DB_PASSWORD=${WORDPRESS_DB_PASSWORD}
+      - ADMIN_USER=${ADMIN_USER}
+      - ADMIN_PASSWORD=${ADMIN_PASSWORD}
+      - ADMIN_EMAIL=${ADMIN_EMAIL}
+volumes:
+  mariadb_data:
+    driver: local
+    driver_opts:
+      type: none
+      device: /home/sgamraou/data/mariadb_data
+      o: bind
+  wordpress_data:
+    driver: local
+    driver_opts:
+      type: none
+      device: /home/sgamraou/data/wordpress_data
+      o: bind
