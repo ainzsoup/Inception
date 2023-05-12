@@ -1,6 +1,7 @@
 version: '3'
 services:
   mariadb:
+    container_name: mariadb
     build: requirements/mariadb
     environment:
       - MYSQL_ROOT_PASSWORD=${MYSQL_ROOT_PASSWORD}
@@ -9,7 +10,10 @@ services:
       - MYSQL_PASSWORD=${MYSQL_PASSWORD}
     volumes:
       - mariadb_data:/var/lib/mysql:rw
+    networks:
+      - inception
   nginx:
+    container_name: nginx
     build: requirements/nginx
     ports:
       - "443:443"
@@ -17,7 +21,10 @@ services:
       - wordpress_data:/var/www/html:rw
     depends_on:
       - wordpress
+    networks:
+      - inception
   wordpress:
+    container_name: wordpress
     build: requirements/wordpress
     depends_on:
       - mariadb
@@ -31,6 +38,8 @@ services:
       - ADMIN_USER=${ADMIN_USER}
       - ADMIN_PASSWORD=${ADMIN_PASSWORD}
       - ADMIN_EMAIL=${ADMIN_EMAIL}
+    networks:
+      - inception
 volumes:
   mariadb_data:
     driver: local
@@ -44,3 +53,6 @@ volumes:
       type: none
       device: /home/sgamraou/data/wordpress_data
       o: bind
+networks:
+  inception:
+    driver: bridge
