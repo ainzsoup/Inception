@@ -1,4 +1,0 @@
-to do list:
-fix the structure
-add the domain name thing 
-change username
